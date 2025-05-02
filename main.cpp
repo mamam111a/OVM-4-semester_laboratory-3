@@ -5,7 +5,6 @@
 #include <functional>
 #include <random>
 using namespace std;
-
 typedef vector<vector<double>> Matrix;
 void GenerateMatrix(Matrix& mat, int size) {
     random_device rd;
@@ -69,6 +68,7 @@ int main() {
     
     C.resize(sizeA, vector<double>(sizeB, 0.0)); 
 
+<<<<<<< HEAD
     int blockSize = 64;
     for(int i = 100; i <= 1000; i+=100) {
         GenerateMatrix(A, i);
@@ -94,6 +94,14 @@ int main() {
         RunANDMeter([&]() { DGEMM_opt_2(A, B, C, i, i, blockSize); }, "DGEMM_opt_2", outFile, i, i);
         outFile << endl;
     }
+=======
+    RunANDMeter([&]() { DGEMM(A, B, C, sizeA, sizeB); }, "DGEMM", outFile, sizeA, sizeB);
+    RunANDMeter([&]() { DGEMM_opt_1(A, B, C, sizeA, sizeB); }, "DGEMM_opt_1", outFile, sizeA, sizeB);
+
+    int blockSize = 64;
+    RunANDMeter([&]() { DGEMM_opt_2(A, B, C, sizeA, sizeB, blockSize); }, "DGEMM_opt_2", outFile, sizeA, sizeB);
+    
+>>>>>>> b8c9517 (ready)
     outFile.close();
 
     return 0;
