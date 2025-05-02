@@ -58,12 +58,12 @@ void RunANDMeter(function<void()> func, const string& label, ofstream& outFile, 
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> duration = end - start;
 
-    outFile << label << " Время: " << duration.count() << " секунд для " << sizeA << "x" << sizeB << endl;
+    outFile << duration.count() << ";" << sizeA << "*" << sizeB << endl;
     cout << label << " Время: " << duration.count() << " секунд для " << sizeA << "x" << sizeB << endl;
 }
 
 int main() {
-    ofstream outFile("time.csv");
+    ofstream outFile("time.csv", ios::app);
     int sizeA, sizeB;
 
     cout << "Введите размерности двух квадратных матриц ==>> ";
@@ -74,13 +74,13 @@ int main() {
     GenerateMatrix(B, sizeB);
     C.resize(sizeA, vector<double>(sizeB, 0.0)); 
 
-    RunANDMeter([&]() { DGEMM(A, B, C, sizeA, sizeB); }, "DGEMM", outFile, sizeA, sizeB);
-    RunANDMeter([&]() { DGEMM_opt_1(A, B, C, sizeA, sizeB); }, "DGEMM_opt_1", outFile, sizeA, sizeB);
+    //RunANDMeter([&]() { DGEMM(A, B, C, sizeA, sizeB); }, "DGEMM", outFile, sizeA, sizeB);
+    //RunANDMeter([&]() { DGEMM_opt_1(A, B, C, sizeA, sizeB); }, "DGEMM_opt_1", outFile, sizeA, sizeB);
 
-    int blockSize = 64;
-    RunANDMeter([&]() { DGEMM_opt_2(A, B, C, sizeA, sizeB, blockSize); }, "DGEMM_opt_2", outFile, sizeA, sizeB);
-    outFile << endl;
     
+    for(int blockSize = 4; blockSize <= 256; blockSize *= 2) {
+        RunANDMeter([&]() { DGEMM_opt_2(A, B, C, sizeA, sizeB, blockSize); }, "DGEMM_opt_2", outFile, sizeA, sizeB);
+    }
     outFile.close();
 
     return 0;
